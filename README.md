@@ -3,10 +3,12 @@ B232270011 С.Тэргэл Лаборатор 1
 ================ Алхам 1(Орчин бэлдэх) ==================
 
 -Node.js татах
+
 [heloise@arch my-first-test]$ node --version
 v26.8.1
 
 -Playwright татах
+
 [heloise@arch my-first-test]$ npx playwright --version
 npm notice run my-first-test@1.0.0 npx
 npm notice run 'playwright' --version
