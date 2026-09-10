@@ -31,14 +31,16 @@ Long CSS or XPath chains below are an example of a bad practice that leads to un
 олох элементээсээ бусад бүтцийг нээх харах шаардлагагүй.
 
 Жишээ нь:
+```html
 <div>
   <form>
     <input placeholder="Username">
   </form>
 </div>
-
+```
 page.locator('//div/form/input') -> xpath
 
+```html
 <div>
   <section> -> нэмсэн
     <form>
@@ -46,6 +48,81 @@ page.locator('//div/form/input') -> xpath
     </form>
   </section>
 </div>
+```
 Энэ үед xpath нь dom бүтцээ алдаж элементээ олохоо больж алдаа заана.
 
-trace үйлдлийг зааврын дагуу /doc хавтсанд үүсгэв. 
+=================== Алхам 3 Assertions ==================================
+
+1. Амжилттай нэвтрэх тест
+Энэ тестээр хэрэглэгчийн нэр болон нууц үг ашиглан SauceDemo системд амжилттай нэвтэрч байгаа эсэхийг шалгасан.
+Нэвтэрсний дараа Products гэсэн текст дэлгэц дээр харагдаж байгаа эсэх болон хэрэглэгч `inventory.html` хуудас руу шилжсэн эсэхийг шалгасан.
+
+Assertions:
+
+- toBeVisible() —> Products элемент хэрэглэгчид харагдаж байгаа эсэхийг шалгана.
+- toHaveURL() —> амжилттай нэвтэрсний дараа URL нь inventory.html агуулж байгаа эсэхийг шалгана.
+
+2. Амжилтгүй нэвтрэх тест
+
+Энэ тестээр буруу нууц үг оруулсан үед систем хэрэглэгчийг нэвтрүүлэхгүй, алдааны мэдээлэл
+харуулах эсэхийг шалгасан. Нэвтрэх оролдлогын дараа SauceDemo-ийн "Epic sadface: Username and password do not match any user in this service"
+гэсэн алдааны мессеж гарч байгаа эсэхийг шалгасан.
+
+Assertion:
+
+- toBeVisible() —> нууц үг буруу үед гарч ирэх алдааны мессеж хэрэглэгчид харагдаж байгаа эсэхийг шалгана.
+
+3. Барааг сагсанд нэмэх тест
+Энэ тестээр хэрэглэгч амжилттай нэвтэрсний дараа бүтээгдэхүүнийг shopping cart-д нэмэх боломжтой
+эсэхийг шалгасан. Эхлээд Products хуудас харагдаж байгаа эсэхийг шалгаад, эхний бүтээгдэхүүнийг 
+сагсанд нэмсний дараа Your Cart хуудас руу орж, Sauce Labs Backpack бүтээгдэхүүн сагсанд нэмэгдсэн эсэхийг шалгасан.
+
+Assertions:
+
+- toBeVisible() —> Products хуудасны элемент харагдаж байгаа эсэхийг шалгана.
+- toBeVisible() —> Your Cart текст харагдаж байгаа эсэхийг шалгана.
+- toBeVisible() —> Sauce Labs Backpack бүтээгдэхүүн сагсанд харагдаж байгаа эсэхийг шалгана.
+
+============= Алхам 4,5,6 =====================================
+Failed Trace-ийн тайлбар
+
+Failed Trace-ийг Playwright-ийн алдаа гарсан үеийн ажиллагааг шалгах зорилгоор үүсгэсэн. 
+Үүнийг шалгахын тулд амжилттай нэвтрэх тестийн assertion-ийг түр хугацаанд буруу assertion-аар сольсон.
+
+Анхны assertion:
+
+```typescript
+await expect(page.getByText('Products')).toBeVisible();
+```
+
+Тестийг зориудаар алдаатай болгохын тулд:
+
+```typescript
+await expect(page.getByText('THIS IS A WRONG ASSERTION')).toBeVisible();
+```
+
+Тест ажиллах үед хэрэглэгч амжилттай нэвтэрсэн боловч **"THIS IS A WRONG ASSERTION"** гэсэн элемент
+веб хуудсанд байхгүй байсан. Тиймээс `toBeVisible()` assertion амжилтгүй болж, Playwright дараах 
+алдааг үүсгэсэн:
+
+```text
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('THIS IS A WRONG ASSERTION')
+Expected: visible
+Error: element(s) not found
+```
+
+Playwright-ийн Trace Viewer ашигласнаар тестийн явцад ямар үйлдлүүд хийгдсэн, аль locator ашигласан,
+assertion яг хаана амжилтгүй болсон зэргийг шалгах боломжтой байсан нь хялбар байсан. Failed
+trace-ийг `docs/trace-failed.zip` файлд хадгалсан.
+
+Дараа нь тестийн assertion-ийг буцааж сэргээсэн:
+
+```typescript
+await expect(page.getByText('Products')).toBeVisible();
+```
+
+Ингэснээр тест дахин амжилттай ажиллаж, `trace-successful.zip` файлд амжилттай тестийн trace-ийг
+хадгалсан.
+
