@@ -11,13 +11,12 @@ test('амжилттай нэвтрэх', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
 
   // Assertion
-  await expect(page.getByText('Products')).toBeVisible();
+  await expect(page.getByText('Product')).toBeVisible();
   await expect(page).toHaveURL(/inventory.html/);
 
   // Logout
   await page.getByRole('button', { name: 'Open Menu' }).click();
-  await page.getByText('Logout').click();
-
+  await page.getByRole('link', { name: 'Logout' }).click();
   // Logout bolson eseh
   await expect(page).toHaveURL('https://www.saucedemo.com/');
 });
